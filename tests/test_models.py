@@ -1,29 +1,27 @@
-from typing import Any
+import pytest
 from project1 import models
 
-def test_settings():
-    # False Case
-    temp_args: dict[str, Any] = {
-        'input': ['*.csv', '*.txt'],
-        'output': 'files/'
-    }
+test_cases = [
+    ({'input': ['*.csv', '*.txt'],'output': 'files/'},
+        models.Settings(input=['*.txt', '*.csv'],output='files/'),
+        True),
+    ({'input': ['*.pdf'],'output': 'files/'},
+        models.Settings(input=['*.txt', '*.csv'],output='files/'),
+        False),
+    ({'input': ['*.csv', '*.txt'],'output': 'dummy/'},
+        models.Settings(input=['*.txt', '*.csv'],output='files/'),
+        False)
+]
 
+@pytest.mark.parametrize("input,want,result", test_cases)
+def test_settings_dunder_equal_func(input, want, result):
+    got = models.Settings.parse(input)
+
+    assert (got == want) is result
+
+def test_settings_dunder_str_func():
+    temp_args = {'input': ['*.csv', '*.txt'],'output': 'files/'}
     got = models.Settings.parse(temp_args)
-    want = models.Settings(
-        input=['*.pdf'],
-        output='file/')
+    want = 'Settings (\n\tinput: {0}\n\toutput: {1}\n)'.format(str(temp_args['input']), temp_args['output'])
 
-    assert got != want
-
-    # True Case
-    temp_args: dict[str, Any] = {
-        'input': ['*.csv', '*.txt'],
-        'output': 'files/'
-    }
-
-    got = models.Settings.parse(temp_args)
-    want = models.Settings(
-        input=['*.txt', '*.csv'],
-        output='files/')
-
-    assert got == want
+    assert str(got) == want

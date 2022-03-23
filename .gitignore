@@ -156,3 +156,5 @@ cython_debug/
 
 # Added by Biswas-N
 maildir
+files
+inp

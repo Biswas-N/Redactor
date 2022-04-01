@@ -40,7 +40,7 @@ if __name__ == '__main__':
     arg_parser.add_argument(
         "--input",
         required=True,
-        nargs='+',
+        action="append",
         help="glob of input files (eg:'*.txt')")
     arg_parser.add_argument(
         "--output",

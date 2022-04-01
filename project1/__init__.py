@@ -1,4 +1,8 @@
-from project1.redactors import name_redactor
+import spacy
+from spacy.tokens import Doc, Span
+import re
+
+from project1.entity_finders import names_finder
 
 BLOCK_CHARACTER = '\u2588'
 
@@ -7,21 +11,25 @@ def redact_pipeline(
         unredacted_txt: str,
         redacts: dict[str, bool]) -> str:
 
-    redactions = []
+    unredacted_txt = re.sub(r' +', ' ', unredacted_txt)
+
+    nlp = spacy.load("en_core_web_md")
+    doc = nlp(unredacted_txt)
+    with doc.retokenize() as retokenizer:
+        for ent in doc.ents:
+            retokenizer.merge(ent)
+
+    redactions: list[Span] = []
     if 'names' in redacts and redacts['names'] is True:
-        redactions += name_redactor.redact(unredacted_txt)
+        redactions += names_finder(doc, nlp=nlp)
 
-    redacted_txt = redact(unredacted_txt, redactions)
-    return redacted_txt
+    return redact(doc, redactions)
 
 
-def redact(
-        unredacted_txt: str,
-        redactions: list[tuple[str, int, int]]) -> str:
+def redact(doc: Doc, redactions: list[Span]) -> str:
+    redacted_text = doc.text
+    for ent in redactions:
+        redacted_text = redacted_text[:ent.start_char] + BLOCK_CHARACTER * len(
+            redacted_text[ent.start_char: ent.end_char]) + redacted_text[ent.end_char:]
 
-    redactions = sorted(redactions, key=lambda r: r[1], reverse=False)
-    for r in redactions:
-        unredacted_txt = unredacted_txt[:r[1]] + \
-            BLOCK_CHARACTER * (r[2] - r[1]) + unredacted_txt[r[2]:]
-
-    return unredacted_txt
+    return redacted_text

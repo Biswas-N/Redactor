@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 spacy = "*"
 en-core-web-md = {file = "https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.2.0/en_core_web_md-3.2.0-py3-none-any.whl"}
+nltk = "*"
 
 [dev-packages]
 pytest = "*"

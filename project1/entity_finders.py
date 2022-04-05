@@ -192,15 +192,34 @@ def address_finder(doc: Doc, nlp: Language) -> list[Span]:
 
 
 def concept_finder(doc: Doc, nlp: Language, concepts: list[str]) -> list[Span]:
-    synonyms = []
+    concept_words = []
     for concept in concepts:
         token = nlp(concept.lower())[0]
-        synonyms += list(set([l.name() for l in token._.wordnet.lemmas()]))
+        synonyms = list(set([l.name() for l in token._.wordnet.lemmas()]))
+
+        syn_sets = token._.wordnet.synsets()
+        hyponyms = []
+        memberholonyms = []
+        partholonyms = []
+        for synonym in syn_sets:
+            for hyponym in [item.lemma_names() for item in synonym.hyponyms()]:
+                hyponyms += hyponym
+            for memberholonym in [item.lemma_names()
+                                  for item in synonym.member_holonyms()]:
+                memberholonyms += memberholonym
+            for partholonym in [item.lemma_names()
+                                for item in synonym.part_holonyms()]:
+                partholonyms += partholonym
+
+        concept_words += synonyms + hyponyms + memberholonyms + partholonyms
 
     redacts = []
     for sent in doc.sents:
-        sent_token_lemmas = [t.lemma_ for t in sent]
-        if any(synonym in sent_token_lemmas for synonym in synonyms):
+        sent_token_lemmas = [t.lemma_.lower() for t in sent]
+        if any(word.replace("_", " ").lower()
+               in sent_token_lemmas for word in concept_words):
+            redacts.append(Span(doc, sent.start, sent.end, label=f'mCONCEPT'))
+        elif any(word.replace("_", " ").lower() in sent.text.lower() for word in concept_words):
             redacts.append(Span(doc, sent.start, sent.end, label=f'mCONCEPT'))
 
     return redacts

@@ -15,15 +15,16 @@ def nlp():
 
 
 test_cases = [
-    ("""
-Hi my name is Biswas. Rocky is my dog's names.
+    ("""Hi my name is Biswas. Rocky is my dog's names.
     """,
      ["Rocky is my dog's names."]),
-    ("""
-United Kingdom and France fought in World War II. The United Kingdom and France
+    ("""United Kingdom and France fought in World War II. The United Kingdom and France
 subsequently declared war on Germany on 3 September.
     """,
-     ["The United Kingdom and France\nsubsequently declared war on Germany on 3 September."])
+     ["United Kingdom and France fought in World War II.",
+      "The United Kingdom and France\nsubsequently declared war on Germany on 3 September."]),
+    ("""In 1346, Mongols catapult bodies of plague victims over the city walls of Caffa. This is an example of Biological Attack.""",
+     ["This is an example of Biological Attack."])
 ]
 
 

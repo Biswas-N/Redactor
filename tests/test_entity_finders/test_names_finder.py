@@ -31,4 +31,5 @@ def test_names_finder(input: str, names: list[str], nlp):
     got = names_finder(doc, nlp)
     print(got)
 
-    assert all([(name in frozenset([tok.text for tok in got])) for name in frozenset(names)])
+    assert all([(name in frozenset([tok.text for tok in got]))
+               for name in frozenset(names)])

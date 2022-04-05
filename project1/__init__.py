@@ -40,7 +40,6 @@ def redact_pipeline(
     if 'phones' in redacts and redacts['phones'] is True:
         redactions += entity_finders.phones_finder(doc, nlp=nlp)
 
-
     if len(concepts) > 0:
         nlp = spacy.load("en_core_web_md")
         nlp.add_pipe(

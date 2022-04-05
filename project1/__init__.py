@@ -23,11 +23,11 @@ def redact_pipeline(
     nlp = en_core_web_md.load()
 
     doc = nlp(unredacted_txt)
-    with doc.retokenize() as retokenizer:
-        for ent in doc.ents:
-            retokenizer.merge(ent)
 
     redactions: list[Span] = []
+    if 'address' in redacts and redacts['address'] is True:
+        redactions += entity_finders.address_finder(doc, nlp=nlp)
+
     if 'names' in redacts and redacts['names'] is True:
         redactions += entity_finders.names_finder(doc, nlp=nlp)
 
@@ -40,8 +40,6 @@ def redact_pipeline(
     if 'phones' in redacts and redacts['phones'] is True:
         redactions += entity_finders.phones_finder(doc, nlp=nlp)
 
-    if 'address' in redacts and redacts['address'] is True:
-        redactions += entity_finders.address_finder(doc, nlp=nlp)
 
     if len(concepts) > 0:
         nlp = spacy.load("en_core_web_md")

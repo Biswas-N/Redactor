@@ -1,4 +1,3 @@
-import pytest
 from project1 import redact_pipeline
 
 
@@ -20,6 +19,9 @@ June 3, 1972"""
             'dates': True,
             'address': True},
         concepts=['kids'])
+
+    print(got_redacted_txt)
+    print(got_stats)
 
     want_redacted_txt = """████████████ was the 44th president of █████████████████, and the first ████████████████ to serve in the office. First elected to the presidency in ████, won a second term in ████. ██ born in ████████ in ████, ████████████ went on to become President of ██████████████████████ and a ████ senator representing ████████. In ████, ████████████ was elected President of █████████████████, becoming the first ████████████████ commander-in-chief. ████████████ served two terms as the 44th president of █████████████████.███████████████████████ was born in ████████, ██████, on ██████████████. ███ ██████, ██████████, was born on an ████ base in ███████, ██████, during World War II. After the ████████ attack on Pearl Harbor, ████████ ██████, ███████, enlisted in the military and marched across Europe in General ███████████████ army. ████████ ██████, ███████, went to work on a bomber assembly line. After the war, the couple studied on the █████████, bought a house through ███████████████████████████ and, after several moves, ended up in ██████.███████ ██████, ████████████████, was born of ███ ethnicity in ███████████████, █████. █████████ grew up herding goats in Africa and, eventually earned a scholarship that allowed ███ to leave █████ and pursue ███ dreams of going to college in ██████. While studying at ███████████████████████████ █████, ████████████████ met fellow student ██████████, and they married on ████████████████.
 

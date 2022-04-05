@@ -22,13 +22,11 @@ def names_finder(doc: Doc, nlp: Language) -> list[Span]:
     patterns = [
         [{"ORTH": {"IN": titles}}, {"IS_SPACE": True, "OP": "?"},
             {"ENT_TYPE": "PERSON", "OP": "+"}],
-        [{"ENT_TYPE": "PERSON", "OP": "+"}],
         [{"ENT_TYPE": "PERSON", "OP": "+"}, {"ORTH": ","},
             {"ENT_TYPE": "PERSON", "OP": "+"}],
         [{"ENT_TYPE": {"IN": ["PERSON", "ORG"]}}, {"ORTH": "'s"}],
-        [{"ORTH": "The", "OP": "?"}, {"IS_SPACE": True,
-                                      "OP": "?"}, {"ENT_TYPE": "ORG", "OP": "+"}],
-        [{"ENT_TYPE": {"IN": ["GPE", "NORP"]}}],
+        [{"ENT_TYPE": {"IN": ["PERSON", "GPE"]}, "OP": "+"}],
+        [{"ENT_TYPE": {"IN": ["NORP", "ORG"]}, "OP": "+"}],
         [{"ENT_TYPE": "NORP"}, {"IS_SPACE": True, "OP": "?"}, {"ORTH": "Grant"}]
     ]
 
@@ -176,6 +174,7 @@ def address_finder(doc: Doc, nlp: Language) -> list[Span]:
 
     patterns = []
     addresses = pyap.parse(doc.text, country='US')
+
     for address in addresses:
         start = str(address).split(',')[0].strip().replace('.', '')
         end = str(address).split(',')[-1].strip().replace('.', '')

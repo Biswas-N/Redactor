@@ -119,3 +119,19 @@ def genders_finder(doc: Doc, nlp: Language) -> list[Span]:
         end in matcher(doc)]
 
     return gender_words
+
+
+def dates_finder(doc: Doc, nlp: Language) -> list[Span]:
+    matcher = Matcher(nlp.vocab)
+
+    patterns = [
+        [{"ENT_TYPE": "DATE", "OP": "+"}],
+        [{"TEXT": {"REGEX": "[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}"}}],
+        [{"TEXT": {"REGEX": "[0-9]{1,2}/[0-9]{1,2}/[0-9]{2}"}}]
+    ]
+    matcher.add("mDATE", patterns, greedy="LONGEST")
+    dates = [Span(doc, start, end, label=nlp.vocab[match_id].text)
+             for match_id, start, end in matcher(doc)]
+
+    return dates
+

@@ -18,11 +18,14 @@ def names_finder(doc: Doc, nlp: Language) -> list[Span]:
         "Miss",
         "Mrs"]
     patterns = [
-        [{"ORTH": {"IN": titles}}, {"IS_SPACE": True, "OP": "?"}, {"ENT_TYPE": "PERSON", "OP": "+"}],
+        [{"ORTH": {"IN": titles}}, {"IS_SPACE": True, "OP": "?"},
+            {"ENT_TYPE": "PERSON", "OP": "+"}],
         [{"ENT_TYPE": "PERSON", "OP": "+"}],
-        [{"ENT_TYPE": "PERSON", "OP": "+"}, {"ORTH": ","}, {"ENT_TYPE": "PERSON", "OP": "+"}],
+        [{"ENT_TYPE": "PERSON", "OP": "+"}, {"ORTH": ","},
+            {"ENT_TYPE": "PERSON", "OP": "+"}],
         [{"ENT_TYPE": {"IN": ["PERSON", "ORG"]}}, {"ORTH": "'s"}],
-        [{"ORTH": "The", "OP": "?"}, {"IS_SPACE": True, "OP": "?"}, {"ENT_TYPE": "ORG", "OP": "+"}],
+        [{"ORTH": "The", "OP": "?"}, {"IS_SPACE": True,
+                                      "OP": "?"}, {"ENT_TYPE": "ORG", "OP": "+"}],
         [{"ENT_TYPE": {"IN": ["GPE", "NORP"]}}],
         [{"ENT_TYPE": "NORP"}, {"IS_SPACE": True, "OP": "?"}, {"ORTH": "Grant"}]
     ]

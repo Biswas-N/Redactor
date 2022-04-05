@@ -2,6 +2,8 @@ from spacy import Language
 from spacy.tokens import Doc, Span
 from spacy.matcher import Matcher
 
+import pyap
+
 
 def names_finder(doc: Doc, nlp: Language) -> list[Span]:
     matcher = Matcher(nlp.vocab)
@@ -167,4 +169,25 @@ def phones_finder(doc: Doc, nlp: Language) -> list[Span]:
         end in matcher(doc)]
 
     return phone_numbers
+
+
+def address_finder(doc: Doc, nlp: Language) -> list[Span]:
+    matcher = Matcher(nlp.vocab)
+
+    patterns = []
+    addresses = pyap.parse(doc.text, country='US')
+    for address in addresses:
+        start = str(address).split(',')[0].strip().replace('.', '')
+        end = str(address).split(',')[-1].strip().replace('.', '')
+
+        pattern = [{"ORTH": tok} for tok in start.split(' ')] \
+            + [{"TEXT": {"REGEX": r".*"}, "OP": "*"}] \
+            + [{"ORTH": tok} for tok in end.split(' ')]
+        patterns.append(pattern)
+
+    matcher.add("mADDRESS", patterns, greedy="FIRST")
+    addresses = [Span(doc, start, end, label=nlp.vocab[match_id].text)
+                 for match_id, start, end in matcher(doc)]
+
+    return addresses
 

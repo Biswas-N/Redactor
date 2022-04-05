@@ -135,3 +135,36 @@ def dates_finder(doc: Doc, nlp: Language) -> list[Span]:
 
     return dates
 
+
+def phones_finder(doc: Doc, nlp: Language) -> list[Span]:
+    matcher = Matcher(nlp.vocab)
+
+    # https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch04s02.html
+    patterns = [
+        [
+            {"ORTH": "+1", "OP": "?"},
+            {"ORTH": "(", "OP": "?"},
+            {"TEXT": {"REGEX": "[2-9][0-8][0-9]"}},
+            {"ORTH": ")", "OP": "?"},
+            {"TEXT": {"REGEX": r"[-.● ]"}, "OP": "?"},
+            {"TEXT": {"REGEX": "[2-9][0-9]{2}"}},
+            {"TEXT": {"REGEX": r"[-.● ]"}, "OP": "?"},
+            {"TEXT": {"REGEX": "[0-9]{4}"}}
+        ],
+        [
+            {"TEXT": {"REGEX": "[2-9][0-8][0-9][2-9][0-9]{2}[0-9]{4}"}}
+        ]
+    ]
+
+    matcher.add("mPHONENUM", patterns, greedy="LONGEST")
+    phone_numbers = [
+        Span(
+            doc,
+            start,
+            end,
+            label=nlp.vocab[match_id].text) for match_id,
+        start,
+        end in matcher(doc)]
+
+    return phone_numbers
+

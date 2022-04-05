@@ -191,3 +191,17 @@ def address_finder(doc: Doc, nlp: Language) -> list[Span]:
 
     return addresses
 
+
+def concept_finder(doc: Doc, nlp: Language, concepts: list[str]) -> list[Span]:
+    synonyms = []
+    for concept in concepts:
+        token = nlp(concept.lower())[0]
+        synonyms += list(set([l.name() for l in token._.wordnet.lemmas()]))
+
+    redacts = []
+    for sent in doc.sents:
+        sent_token_lemmas = [t.lemma_ for t in sent]
+        if any(synonym in sent_token_lemmas for synonym in synonyms):
+            redacts.append(Span(doc, sent.start, sent.end, label=f'mCONCEPT'))
+
+    return redacts

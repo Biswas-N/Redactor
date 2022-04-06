@@ -1,5 +1,5 @@
 # Redactor (Project 1)
-## Developer: Biswas Nandamuri (130)
+## Developer: Biswas Nandamuri (113528080)
 Redactor is a python based utillity tool used to redact sensitive information using Natural Language processing tools like Spacy and Nltk.
 
 > The project's python code follows PEP8 Style Guide
@@ -55,6 +55,7 @@ Documentation about the tests can be found [here](./docs/Testing.md). Follow the
     $ make cov
     ```
 
-## Bugs/Assumptions [TO-DO]
--  The utility is built based on the assumption that, there might be empty spaces either in Location or Nature column or both. If there are empty value in any other columns the utility may fail to extract incidents.
-- The utility assumes there are only five columns (Datetime, Incident Number, Location, Nature and Incident ORI) for each incident. If that is changed, the utility may fail to extract incidents.
+## Bugs/Assumptions
+- Names of people, organizations, geo political entities, Nationalitiesm religious or political group names are considered as names and thus redacted if `--names` flag is used.
+- This tool depends on SpaCy's en_core_web_md model and WordNet. Thus, the accuracy and performance of this application is directly dependent on SpaCy model and WordNet respective accuracies and performances.
+- This tools accuracy and performance is enhanced by using regular expressions along with SpaCy and WordNet, but unfortunately not all cases of the entities (names, phones, genders, dates and addresses) were included as regular expressions. Thus, some information may not be redacted if they were not recognized by SpaCy model or present in WordNet and included regular expressions.

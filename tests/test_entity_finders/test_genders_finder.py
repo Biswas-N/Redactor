@@ -1,12 +1,12 @@
 import pytest
-import spacy
+import en_core_web_md
 
 from project1.entity_finders import genders_finder
 
 
 @pytest.fixture(scope='module')
 def nlp():
-    return spacy.load("en_core_web_md")
+    return en_core_web_md.load()
 
 
 test_cases = [

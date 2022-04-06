@@ -1,6 +1,6 @@
 from project1.entity_finders import concept_finder
 import pytest
-import spacy
+import en_core_web_md
 from spacy_wordnet.wordnet_annotator import WordnetAnnotator
 import nltk
 nltk.download("wordnet")
@@ -9,7 +9,7 @@ nltk.download("omw")
 
 @pytest.fixture(scope='module')
 def nlp():
-    nlp = spacy.load("en_core_web_md")
+    nlp = en_core_web_md.load()
     nlp.add_pipe("spacy_wordnet", after='tagger', config={'lang': nlp.lang})
     return nlp
 

@@ -1,7 +1,6 @@
 from project1 import entity_finders
 from typing import Tuple
 import re
-import spacy
 import en_core_web_md
 from spacy.tokens import Doc, Span
 from spacy_wordnet.wordnet_annotator import WordnetAnnotator
@@ -17,7 +16,21 @@ def redact_pipeline(
         unredacted_txt: str,
         redacts: dict[str, bool],
         concepts: list[str]) -> Tuple[str, str]:
+    """Redacts the given text based on 'redacts' and 'concepts'
 
+    Parameters
+    ----------
+    unredacted_txt  :   Content of the document to be redacted.
+    redacts         :   Dict containing redactions to be made
+    concepts        :   List of concepts used to redact similar sentences
+
+    Returns
+    -------
+    redacted_txt,
+        stats       : Redacted text and statistics tuple are returned
+    """
+
+    # Removing any multiple spaces
     unredacted_txt = re.sub(r' +', ' ', unredacted_txt)
 
     nlp = en_core_web_md.load()
@@ -41,7 +54,10 @@ def redact_pipeline(
         redactions += entity_finders.phones_finder(doc, nlp=nlp)
 
     if len(concepts) > 0:
-        nlp = spacy.load("en_core_web_md")
+        nlp = en_core_web_md.load()
+        # Adding Spacy and Wordnet custom Annotator
+        # Enables the use of token._.wordnet.synsets() and
+        # token._.wordnet.lemmas()
         nlp.add_pipe(
             "spacy_wordnet",
             after='tagger',
@@ -59,6 +75,18 @@ def redact_pipeline(
 
 
 def redact(doc: Doc, redactions: list[Span]) -> str:
+    """Redacts the list of Spans in the given document
+
+    Parameters
+    ----------
+    doc         : Raw unredacted document
+    redactions  : List of SpaCy Spans that needs to be redacted in doc
+
+    Returns
+    -------
+    redacted_txt: Redacted text
+    """
+
     redacted_text = doc.text
     for ent in sorted(redactions, key=lambda s: s.start, reverse=True):
         redacted_text = redacted_text[:ent.start_char] + BLOCK_CHARACTER * len(
@@ -68,6 +96,18 @@ def redact(doc: Doc, redactions: list[Span]) -> str:
 
 
 def get_stats(doc: Doc, redactions: list[Span]) -> str:
+    """Generates the statistics of the given document and redacted Spans
+
+    Parameters
+    ----------
+    doc         : Raw unredacted document
+    redactions  : List of SpaCy Spans that needs to be redacted in doc
+
+    Returns
+    -------
+    statistics  : Formatted Statistics
+    """
+
     stats_txt_arr = []
 
     redact_types = [

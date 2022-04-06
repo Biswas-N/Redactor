@@ -2,6 +2,8 @@ from typing import Any
 
 
 class Settings(object):
+    """Parses the used entered Command Line Arguments to Settings."""
+
     SUPPORTED_REDACTS: list[str] = [
         'names', 'genders', 'dates', 'phones', 'address']
 

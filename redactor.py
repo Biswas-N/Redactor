@@ -9,6 +9,13 @@ from project1.models import Settings
 
 
 def main(settings: Settings):
+    """Redacts each file using project1 module
+
+    Parameters
+    ----------
+    settings    : Parsed command line args as an instance of Settings class
+    """
+
     # Getting input files
     input_files = []
     for i in settings.input:
@@ -21,7 +28,10 @@ def main(settings: Settings):
         redacted_txt = ""
 
         input_file_path = Path(input_file).resolve()
+        # Try-except block to catch any file access or file reading errors
         try:
+            # Reads the content of the given file and starts the redaction
+            # process
             with open(input_file_path, 'r') as in_f:
                 unredacted_txt = in_f.read()
                 redacted_txt, stats = redact_pipeline(
@@ -33,6 +43,8 @@ def main(settings: Settings):
                     f"========== Stats:{input_file} ==========\n{stats}")
 
         except BaseException:
+            # Exception is written to StdErr and loop is continued for other
+            # remaining files
             sys.stderr.write(f'Could not read and redact {input_file}\n\n')
             continue
 
@@ -40,7 +52,8 @@ def main(settings: Settings):
             print(f'Redacting {input_file} ->')
             output_to_std(redacted_txt, settings.output)
         else:
-            # Creating output path irrespective of OS (Windows and Posix)
+            # Generating output path and creating any parent folders in the path
+            # irrespective of OS (Windows or Posix)
             output_file_folder = Path(
                 os.path.join(
                     settings.output,
@@ -63,6 +76,14 @@ def main(settings: Settings):
 
 
 def output_to_std(content: str, output: str):
+    """Writes the content to standard files (stdout ot stderr)
+
+    Parameters
+    ----------
+    content : Content to be written
+    output  : Special file to which content has to be written
+    """
+
     old_stdout_state = sys.stdout
     if output == 'stderr':
         sys.stdout = sys.stderr
@@ -74,6 +95,14 @@ def output_to_std(content: str, output: str):
 
 
 def output_to_file(content: str, output_file: Path):
+    """Writes the content to the given file
+
+    Parameters
+    ----------
+    content     : Content to be written
+    output_file : File to which content has to be written
+    """
+
     with open(output_file.resolve(), 'w', encoding='utf-8') as out_f:
         out_f.write(content)
 

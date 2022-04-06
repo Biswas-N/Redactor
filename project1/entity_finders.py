@@ -6,6 +6,18 @@ import pyap
 
 
 def names_finder(doc: Doc, nlp: Language) -> list[Span]:
+    """Finds the names in a given document
+
+    Parameters
+    ----------
+    doc     : Raw unredacted document
+    nlp     : SpaCy NLP pipeline
+
+    Returns
+    -------
+    names   : List of names in the form of Spans
+    """
+
     matcher = Matcher(nlp.vocab)
 
     titles = [
@@ -39,6 +51,18 @@ def names_finder(doc: Doc, nlp: Language) -> list[Span]:
 
 
 def genders_finder(doc: Doc, nlp: Language) -> list[Span]:
+    """Finds the gender-revealing words in a given document
+
+    Parameters
+    ----------
+    doc     : Raw unredacted document
+    nlp     : SpaCy NLP pipeline
+
+    Returns
+    -------
+    genders : List of gender-revealing words in the form of Spans
+    """
+
     matcher = Matcher(nlp.vocab)
 
     gender_lemmas = [
@@ -122,6 +146,18 @@ def genders_finder(doc: Doc, nlp: Language) -> list[Span]:
 
 
 def dates_finder(doc: Doc, nlp: Language) -> list[Span]:
+    """Finds the dates in a given document
+
+    Parameters
+    ----------
+    doc     : Raw unredacted document
+    nlp     : SpaCy NLP pipeline
+
+    Returns
+    -------
+    dates   : List of dates in the form of Spans
+    """
+
     matcher = Matcher(nlp.vocab)
 
     patterns = [
@@ -137,9 +173,20 @@ def dates_finder(doc: Doc, nlp: Language) -> list[Span]:
 
 
 def phones_finder(doc: Doc, nlp: Language) -> list[Span]:
+    """Finds the phonenumbers in a given document
+
+    Parameters
+    ----------
+    doc         : Raw unredacted document
+    nlp         : SpaCy NLP pipeline
+
+    Returns
+    -------
+    phonenumbers: List of phonenumbers in the form of Spans
+    """
+
     matcher = Matcher(nlp.vocab)
 
-    # https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch04s02.html
     patterns = [
         [
             {"ORTH": "+1", "OP": "?"},
@@ -170,6 +217,18 @@ def phones_finder(doc: Doc, nlp: Language) -> list[Span]:
 
 
 def address_finder(doc: Doc, nlp: Language) -> list[Span]:
+    """Finds the addresses in a given document
+
+    Parameters
+    ----------
+    doc         : Raw unredacted document
+    nlp         : SpaCy NLP pipeline
+
+    Returns
+    -------
+    addresses   : List of addresses in the form of Spans
+    """
+
     matcher = Matcher(nlp.vocab)
 
     patterns = []
@@ -179,6 +238,7 @@ def address_finder(doc: Doc, nlp: Language) -> list[Span]:
         start = str(address).split(',')[0].strip().replace('.', '')
         end = str(address).split(',')[-1].strip().replace('.', '')
 
+        # Generating pattern for each address found using pyap
         pattern = [{"ORTH": tok} for tok in start.split(' ')] \
             + [{"TEXT": {"REGEX": r".*"}, "OP": "*"}] \
             + [{"ORTH": tok} for tok in end.split(' ')]
@@ -192,7 +252,21 @@ def address_finder(doc: Doc, nlp: Language) -> list[Span]:
 
 
 def concept_finder(doc: Doc, nlp: Language, concepts: list[str]) -> list[Span]:
+    """Finds the sentences representing given concepts in a given document
+
+    Parameters
+    ----------
+    doc         : Raw unredacted document
+    nlp         : SpaCy NLP pipeline
+    concepts    : List of concepts to be redacted
+
+    Returns
+    -------
+    sentences   : List of sentences in the form of Spans
+    """
+
     concept_words = []
+    # Constructing concept related word list
     for concept in concepts:
         token = nlp(concept.lower())[0]
         synonyms = list(set([l.name() for l in token._.wordnet.lemmas()]))
@@ -214,12 +288,14 @@ def concept_finder(doc: Doc, nlp: Language, concepts: list[str]) -> list[Span]:
         concept_words += synonyms + hyponyms + memberholonyms + partholonyms
 
     redacts = []
+    # Finding concepts related sentences in the document
     for sent in doc.sents:
         sent_token_lemmas = [t.lemma_.lower() for t in sent]
         if any(word.replace("_", " ").lower()
                in sent_token_lemmas for word in concept_words):
             redacts.append(Span(doc, sent.start, sent.end, label=f'mCONCEPT'))
-        elif any(word.replace("_", " ").lower() in sent.text.lower() for word in concept_words):
+        elif any(word.replace("_", " ").lower()
+                 in sent.text.lower() for word in concept_words):
             redacts.append(Span(doc, sent.start, sent.end, label=f'mCONCEPT'))
 
     return redacts

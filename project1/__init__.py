@@ -60,7 +60,7 @@ def redact_pipeline(
 
 def redact(doc: Doc, redactions: list[Span]) -> str:
     redacted_text = doc.text
-    for ent in redactions:
+    for ent in sorted(redactions, key=lambda s: s.start, reverse=True):
         redacted_text = redacted_text[:ent.start_char] + BLOCK_CHARACTER * len(
             redacted_text[ent.start_char: ent.end_char]) + redacted_text[ent.end_char:]
 

@@ -1,5 +1,5 @@
-# Redactor (Project 1)
-## Developer: Biswas Nandamuri (113528080)
+# Redactor
+## Developer: Biswas Nandamuri
 Redactor is a python based utillity tool used to redact sensitive information using Natural Language processing tools like Spacy and Nltk.
 
 > The project's python code follows PEP8 Style Guide
@@ -18,8 +18,8 @@ This utility uses a number of open source packages and tools:
 ## Run on local system
 1. Clone this repository and move into the folder.
     ```sh
-    $ git clone https://github.com/Biswas-N/cs5293sp22-project1.git
-    $ cd cs5293sp22-project1
+    $ git clone https://github.com/Biswas-N/Redactor.git
+    $ cd Redactor
     ```
 2. Install dependencies using [Pipenv](https://github.com/pypa/pipenv).
     ```sh
